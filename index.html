@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ModxNet – Unlock Premium Apps</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Inter:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* ----------------------------------------------------
+           1. Base Styles & Color Scheme
+           ---------------------------------------------------- */
+        :root {
+            --dark-bg: #141414; 
+            --card-bg: #222222; 
+            --primary-color: #ff9900; /* Orange/Gold Accent */
+            --text-color: #ffffff;
+            --sub-text-color: #b0b0b0;
+            --success-color: #4CAF50;
+            --link-color: #ffcc66;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            line-height: 1.4;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 8px; 
+        }
+        
+        h2 {
+            font-size: 1.4rem; 
+            margin-bottom: 15px;
+            font-weight: 800;
+            text-align: center;
+            color: var(--primary-color);
+        }
+        
+        /* ----------------------------------------------------
+           2. Header & Logo
+           ---------------------------------------------------- */
+        header {
+            background-color: var(--card-bg);
+            padding: 8px 0;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .logo h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 22px; 
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            font-size: 1.1em;
+        }
+        
+        /* ----------------------------------------------------
+           3. Game Cards (Interactive Hover)
+           ---------------------------------------------------- */
+        .search-section {
+            padding: 20px 0;
+        }
+
+        .search-controls {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--card-bg);
+            border: 1px solid #333;
+            border-radius: 5px;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .view-toggle {
+            display: flex;
+            background-color: var(--card-bg);
+            border-radius: 5px;
+            padding: 3px;
+            border: 1px solid #333;
+        }
+        
+        .view-toggle button {
+            background: none;
+            border: none;
+            color: var(--sub-text-color);
+            font-size: 1.1rem;
+            padding: 5px 8px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .view-toggle button.active {
+            background-color: var(--primary-color);
+            color: var(--dark-bg);
+        }
+
+        .game-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            border: 1px solid #333;
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.3s;
+            overflow: hidden; /* Important for list view text overflow */
+        }
+        
+        .game-card:hover {
+            transform: scale(1.03); 
+            box-shadow: 0 0 15px rgba(255, 153, 0, 0.5); 
+        }
+
+        .game-card img {
+            width: 70px; 
+            height: 70px;
+            border-radius: 8px;
+            object-fit: cover;
+            /* Ensure the image is block level for grid centering */
+            display: block; 
+        }
+        
+        .game-info h3 {
+            font-size: 0.85rem; 
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .game-info p {
+            font-size: 0.7rem; 
+            color: var(--sub-text-color);
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; 
+        }
+        
+        /* Grid View */
+        .games-grid.grid-view {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 12px; 
+        }
+        .games-grid.grid-view .game-card {
+            text-align: center;
+        }
+        .games-grid.grid-view .game-card img {
+            margin: 0 auto 5px;
+        }
+
+        /* List View */
+        .games-grid.list-view {
+            display: grid;
+            grid-template-columns: 1fr; 
+            gap: 8px;
+        }
+
+        .games-grid.list-view .game-card {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            text-align: left;
+        }
+        .games-grid.list-view .game-card img {
+            width: 50px; 
+            height: 50px;
+            margin-right: 10px;
+            margin-bottom: 0;
+            flex-shrink: 0;
+        }
+        .games-grid.list-view .game-info {
+            flex-grow: 1;
+            /* Ensure text overflow ellipsis works properly in list view */
+            min-width: 0; 
+        }
+        
+        .game-card.hidden {
+            display: none !important;
+            opacity: 0;
+        }
+        
+        /* ----------------------------------------------------
+           4. PROFESSIONAL RATING STYLES
+           ---------------------------------------------------- */
+        .game-info .rating {
+            font-size: 0.85rem; /* Star size */
+            color: gold; /* Color for filled stars */
+            display: inline-block;
+            letter-spacing: 1px; /* Tighter spacing between stars */
+        }
+        
+        /* Styling for empty star icons */
+        .game-info .rating i.far {
+            color: #444; /* Darker color for empty stars */
+        }
+
+        /* ----------------------------------------------------
+           5. Modal (Popup) Styles
+           ---------------------------------------------------- */
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding-top: 50px;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: 5% auto;
+            padding: 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .modal-options {
+            display: flex;
+            flex-direction: column; 
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .modal-option {
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border: none;
+            color: var(--dark-bg);
+        }
+
+        #androidBtn { background-color: var(--success-color); }
+        #androidBtn:hover { background-color: #45a049; }
+        #iosBtn { background-color: #8c8c8c; }
+        #iosBtn:hover { background-color: #7a7a7a; }
+
+        /* ----------------------------------------------------
+           6. Steps Section (Styling for Steps)
+           ---------------------------------------------------- */
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+        .step-number {
+            font-size: 1.5rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+        .step-header h4 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        @media (min-width: 600px) {
+            .steps-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>GZ <span>PRO</span></h1>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h2 style="color: var(--text-color);">Unlock Premium Mobile Games for Free</h2>
+            <p style="font-size: 0.85rem; color: var(--sub-text-color);">Download modded APK/IPA files for the latest premium mobile games. Get unlimited features, unlocked content, and premium versions - all completely free!</p>
+            
+            <div class="trust-points">
+                <div class="trust-point" style="display: inline-block; margin-right: 15px; color: var(--success-color); font-size: 0.85rem;"><i class="fas fa-check-circle"></i> FREE Downloads</div>
+                <div class="trust-point" style="display: inline-block; margin-right: 15px; color: var(--sub-text-color); font-size: 0.85rem;"><i class="fas fa-shield-alt"></i> Safe & Verified</div>
+                <div class="trust-point" style="display: inline-block; color: var(--primary-color); font-size: 0.85rem;"><i class="fas fa-gamepad"></i> 20+ Premium Games</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="search-section">
+        <div class="container">
+            <div class="search-controls">
+                <div class="search-bar">
+                    <input type="text" id="gameSearch" placeholder="Search 20+ Modded Games..." aria-label="Search games">
+                </div>
+                <div class="view-toggle">
+                    <button id="gridViewBtn" class="active" aria-label="Grid View"><i class="fas fa-th"></i></button>
+                    <button id="listViewBtn" aria-label="List View"><i class="fas fa-list"></i></button>
+                </div>
+            </div>
+
+            <div class="games-grid grid-view" id="gamesGrid">
+                
+                <div class="game-card" data-game-title="GTA V Mobile" onclick="openDownloadModal('GTA V Mobile')">
+                    <img src="https://i.pinimg.com/736x/1b/98/93/1b98930584013034764a7e88d92e154f.jpg" alt="GTA V Logo">
+                    <div class="game-info">
+                        <h3>GTA V Mobile</h3>
+                        <p>v1.0.3095 (Unlimited Cash)</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card" data-game-title="BeamNG.drive mobile" onclick="openDownloadModal('BeamNG.drive mobile')">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyWteE2G2M3-o1BQZc57vmc3fAijtqxNt12w&s" alt="BeamNG Logo">
+                    <div class="game-info">
+                        <h3>BeamNG.drive</h3>
+                        <p>v0.32 (Full Map Mod)</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card" data-game-title="Forza Horizon mobile" onclick="openDownloadModal('Forza Horizon mobile')">
+                    <img src="https://cdn.patchbot.io/games/97/forza_5_sm.webp" alt="Forza Horizon 5 Cover">
+                    <div class="game-info">
+                        <h3>Forza Horizon</h3>
+                        <p>v0.55.0 (All Cars Unlocked)</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="game-card" data-game-title="Red Dead Redemption" onclick="openDownloadModal('Red Dead Redemption')">
+                    <img src="https://assetsio.gnwcdn.com/red-dead-redemption-2_cMylixL.jpg?width=1200&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp" alt="Red Dead Redemption Cover">
+                    <div class="game-info">
+                        <h3>Red Dead Redemption</h3>
+                        <p>v1.5.2 (Premium Content)</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card" data-game-title="CarX Street" onclick="openDownloadModal('CarX Street')">
+                    <img src="https://img.playstationtrophies.org/images/2025/07/24/icon/f101d0d5c2ced33e9c79437d5d56c500-l.png" alt="CarX Street Logo">
+                    <div class="game-info">
+                        <h3>CarX Street</h3>
+                        <p>v1.7.3 (Unlimited Nitro)</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="game-card" data-game-title="Hollow Knight Mobile" onclick="openDownloadModal('Hollow Knight Mobile')">
+                    <img src="https://i.redd.it/vfnomvstr9g91.jpg" alt="Hollow Knight Cover">
+                    <div class="game-info">
+                        <h3>Hollow Knight</h3>
+                        <p>v1.5.78 (Skills Unlocked)</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card" data-game-title="8 Ball Pool Aimbot Mod" onclick="openDownloadModal('8 Ball Pool Aimbot Mod')">
+                    <img src="https://img.utdstc.com/icon/621/434/621434dc8c953412d3afbd3005e5086b34b979e2c1af97b2f4418f3733bc4845:200" alt="8 Ball Pool Logo">
+                    <div class="game-info">
+                        <h3>8 Ball Pool Aimbot</h3>
+                        <p>v5.15.2 (Perfect Aim)</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card" data-game-title="Fortnite Mobile" onclick="openDownloadModal('Fortnite Mobile')">
+                    <img src="https://i.pinimg.com/736x/2c/04/5f/2c045fa7b427c0ca7f6ae22ddf05f208.jpg" alt="Fortnite Logo">
+                    <div class="game-info">
+                        <h3>Fortnite Mobile</h3>
+                        <p>v7.10.0 (No Ads/Better FPS)</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card" data-game-title="WWE 2K25 Mobile" onclick="openDownloadModal('WWE 2K25 Mobile')">
+                    <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/aacf7545-f3cd-48d5-b931-28ce4a28db0e/djd7tbu-d637c637-86fd-48ed-8843-5cf663cc8a33.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiIvZi9hYWNmNzU0NS1mM2NkLTQ4ZDUtYjkzMS0yOGNlNGEyOGRiMGUvZGpkN3RidS1kNjM3YzYzNy04NmZkLTQ4ZWQtODg0My01Y2Y2NjNjYzhhMzMucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.Anpn0a-7K6HCUJg7y3iPNEyxhCcMKO1ecw0bj9fmv2I" alt="WWE 2K25 Logo">
+                    <div class="game-info">
+                        <h3>WWE 2K25</h3>
+                        <p>v1.5.0 (All Roster Unlocked)</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card" data-game-title="Euro Truck Simulator 2" onclick="openDownloadModal('Euro Truck Simulator 2')">
+                    <img src="https://p1.hiclipart.com/preview/170/902/354/euro-truck-simulator-2-icon-euro-truck-2-euro-truck-simulator-2-icon-png-clipart.jpg" alt="ETS2 Cover">
+                    <div class="game-info">
+                        <h3>ETS 2 Mobile</h3>
+                        <p>v1.49 (Unlimited Money)</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card" data-game-title="Speed Stars Mod" onclick="openDownloadModal('Speed Stars Mod')">
+                    <img src="https://apktodo.io/uploads/2025/5/speed-stars-running-game-icon.jpg" alt="Speed Stars Logo">
+                    <div class="game-info">
+                        <h3>Speed Stars Mod</h3>
+                        <p>v2.1.0 (Unlimited Boost)</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card" data-game-title="Gorilla Tag Mobile" onclick="openDownloadModal('Gorilla Tag Mobile')">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvKzSNZDDwRS8QiBKHdmKwRL1Mx6Hnxgzoqw&s" alt="Gorilla Tag Logo">
+                    <div class="game-info">
+                        <h3>Gorilla Tag</h3>
+                        <p>v1.0 (All Maps Unlocked)</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="game-card" data-game-title="Rush Xtreme MPD Dispatch Mobile" onclick
+                <script>
+function openDownloadModal(gameName) {
+    window.location.href = "https://lockedapp.space/cl/i/pqo75l";
+}
+</script>
